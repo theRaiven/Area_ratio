@@ -54,12 +54,12 @@ int main()
 	auto start{ chrono::high_resolution_clock::now() };
 	if (P == 0)
 	{
-		printf_s("%.3f", x_min);
+		cout << x_min;
 		return 0;
 	}
 	if (Q == 0)
 	{
-		printf_s("%.3f", x_max);
+		cout << x_max;
 		return 0;
 	}
 	x_second = GetNewSecondary(x_max, x_min);

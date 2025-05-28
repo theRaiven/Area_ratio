@@ -7,20 +7,42 @@
 #include <psapi.h>
 using namespace std;
 
+class TimeMemory
+{
+private:
+	PROCESS_MEMORY_COUNTERS pmc;
+	chrono::steady_clock::time_point start;
+	chrono::steady_clock::time_point end;
+	chrono::duration<double> duration;
+public: 
+
+	void PrintMemoryUsage()
+	{
+		GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+		std::cout << "Using memory: " << pmc.WorkingSetSize / (1024 * 1024) << " MiB\n";
+	}
+	void StartTime()
+	{
+		start = chrono::high_resolution_clock::now();
+	}
+	void EndTime()
+	{
+		end = chrono::high_resolution_clock::now();
+		duration = end - start;
+		cout << endl << "Время выполнения: " << duration.count() << " секунд" << endl;
+	}
+};
+
+
 float CountSquare(vector<pair<int, int>> coordinates, int n, float x_second, float x_min, float x_max, int P, int Q);
 int CheckRatio(float Square_P, float Square_Q, int P, int Q);
 float GetNewSecondary(float max, float min);
 
-void PrintMemoryUsage()
- {
-	PROCESS_MEMORY_COUNTERS pmc;
-	GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-	std::cout << "Using memory: " << pmc.WorkingSetSize / (1024 * 1024) << " MiB\n";
-}
 
 int main()
 {
-	PrintMemoryUsage();
+	TimeMemory measTimeMemory; // measuring timeand memory
+	measTimeMemory.PrintMemoryUsage();
 	setlocale(LC_ALL, "rus");
 
 	int number_vertices, P, Q;
@@ -51,7 +73,12 @@ int main()
 			x_min = coordinates_vertices[i].first;
 		}
 	}
-	auto start{ chrono::high_resolution_clock::now() };
+	if (P < 0 || Q < 0 || P > 100 || Q > 100)
+	{
+		cout << "Error: Does not meet the condition";
+		return 0;
+	}
+	measTimeMemory.StartTime();
 	if (P == 0)
 	{
 		cout << x_min;
@@ -69,10 +96,8 @@ int main()
 	cout.precision(3);
 	cout << result;
 
-	auto end{ chrono::high_resolution_clock::now() };
-	chrono::duration<double> duration = end - start;
-	cout << endl << "Время выполнения: " << duration.count() << " секунд" << endl;
-	PrintMemoryUsage();
+	measTimeMemory.EndTime();
+	measTimeMemory.PrintMemoryUsage();
 	return 0;
 }
 

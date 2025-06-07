@@ -1,4 +1,6 @@
-﻿#include "Header.h"
+﻿#include <iostream>
+#include <vector>
+#include <math.h>
 
 using namespace std;
 const double PI = acos(-1.0);
@@ -60,6 +62,11 @@ public:
         return ((b - a).cross(c - a)) > 0;
     }
 
+    float GetIntersectionPoint(Point B_table, Point A_table, Point P_cloth, Point Q_cloth)
+    {
+        return ((B_table - A_table).cross(P_cloth - A_table)) / ((Q_cloth - P_cloth).cross(B_table - A_table));
+    }
+
     vector<Point> Polygon_crossing(const vector<Point>& cloth, const vector<Point>& table)
     {
         polyg = cloth;
@@ -75,26 +82,26 @@ public:
             for (int j = 0; j < input.size(); ++j)
             {
                 Point P_cloth = input[j];
-                Point Q = input[(j + 1) % input.size()];
+                Point Q_cloth = input[(j + 1) % input.size()];
                 bool inP = is_left(A_table, B_table, P_cloth);
-                bool inQ = is_left(A_table, B_table, Q);
+                bool inQ = is_left(A_table, B_table, Q_cloth);
 
                 float t;
 
                 if (inP && inQ)
                 {
-                    polyg.push_back(Q);
+                    polyg.push_back(Q_cloth);
                 }
                 else if (inP && !inQ)
                 {
-                    t = ((B_table - A_table).cross(P_cloth - A_table)) / ((Q - P_cloth).cross(B_table - A_table));
-                    polyg.push_back(P_cloth + (Q - P_cloth) * t);
+                    t = GetIntersectionPoint(B_table, A_table, P_cloth, Q_cloth);
+                    polyg.push_back(P_cloth + (Q_cloth - P_cloth) * t);
                 }
                 else if (!inP && inQ)
                 {
-                    t = ((B_table - A_table).cross(P_cloth - A_table)) / ((Q - P_cloth).cross(B_table - A_table));
-                    polyg.push_back(P_cloth + (Q - P_cloth) * t);
-                    polyg.push_back(Q);
+                    t = GetIntersectionPoint(B_table, A_table, P_cloth, Q_cloth);
+                    polyg.push_back(P_cloth + (Q_cloth - P_cloth) * t);
+                    polyg.push_back(Q_cloth);
                 }
 
             }
@@ -118,10 +125,7 @@ float Area(float a, float b, float c)
     {
         return round((b * a) * 10000) / 10000;
     }
-    else if (c >= sqrt(2) * a && b < a)
-    {
-        return round( (b * b / 2 + (sqrt(2) * a - b) * b - 0.00002)* 10000)/10000;
-    }
+
     else
     {
         float maxArea = 0;
@@ -133,7 +137,7 @@ float Area(float a, float b, float c)
             {-a / 2, a / 2}
         };
 
-        for (float angle = 0; angle < PI / 4.0; angle += 0.00005)
+        for (float angle = 0; angle < PI / 4.0; angle += 0.0001)
         {
             vector<Point> cloth
             {
@@ -159,12 +163,10 @@ float Area(float a, float b, float c)
 
 int main()
 {
-    
-    setlocale(LC_ALL, "rus");
 	float table_length;
 	float tablecloth_width;
 	float tablecloth_length;
  	cin >> table_length >> tablecloth_width >> tablecloth_length;
 	cout << Area(table_length, tablecloth_width, tablecloth_length);
-	return 0;
+    return 0;
 }

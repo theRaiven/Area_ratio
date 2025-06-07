@@ -1,37 +1,4 @@
-﻿#include <iostream>
-#include <vector>
-#include <math.h>
-
-#include <chrono>
-#include <windows.h>
-#include <psapi.h>
-using namespace std;
-
-class TimeMemory
-{
-private:
-	PROCESS_MEMORY_COUNTERS pmc;
-	chrono::steady_clock::time_point start;
-	chrono::steady_clock::time_point end;
-	chrono::duration<double> duration;
-public: 
-
-	void PrintMemoryUsage()
-	{
-		GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-		std::cout << "Using memory: " << pmc.WorkingSetSize / (1024 * 1024) << " MiB\n";
-	}
-	void StartTime()
-	{
-		start = chrono::high_resolution_clock::now();
-	}
-	void EndTime()
-	{
-		end = chrono::high_resolution_clock::now();
-		duration = end - start;
-		cout << endl << "Время выполнения: " << duration.count() << " секунд" << endl;
-	}
-};
+﻿#include "Header.h"
 
 
 float CountSquare(vector<pair<int, int>> coordinates, int n, float x_second, float x_min, float x_max, int P, int Q);
@@ -39,9 +6,9 @@ int CheckRatio(float Square_P, float Square_Q, int P, int Q);
 float GetNewSecondary(float max, float min);
 
 
-int main()
+int mainn()
 {
-	TimeMemory measTimeMemory; // measuring timeand memory
+	TimeMemory measTimeMemory; // measuring time and memory
 	measTimeMemory.PrintMemoryUsage();
 	setlocale(LC_ALL, "rus");
 
